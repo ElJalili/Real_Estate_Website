@@ -1,0 +1,90 @@
+/* Motion only. Neutral perspective compensation preserves the existing design. */
+.hero { perspective: 1800px; }
+.hero-scene, .hero-foreground {
+  transform: translate3d(calc(var(--mx) * -.34), calc(var(--my) * -.34 + var(--architecture-scroll, 0px)), var(--architecture-z, 0px))
+    rotateX(var(--scene-rx, 0deg)) rotateY(var(--scene-ry, 0deg)) scale(var(--architecture-scale, 1.035));
+}
+/* A sky-only copy of the same photograph. The stationary mask tracks the
+   architecture while the sky moves independently, avoiding doubled roof edges. */
+.hero-shade {
+  mask: url('/assets/hero-sky-mask.svg') 0 0 / 100% 100% no-repeat;
+  mask-mode: luminance;
+  pointer-events: none;
+}
+.hero-shade::before {
+  content: ''; position: absolute; inset: 0;
+  background: url('/assets/hero.webp') center top / cover no-repeat;
+  transform: translate3d(var(--sky-x, 0px), var(--sky-y, 0px), 0);
+}
+.hero-title {
+  z-index: -2;
+  transform: translate3d(calc(var(--mx) * .7 + var(--title-origin-x, 0px)), calc(var(--my) * .6 + var(--title-origin-y, 0px)), var(--title-z, 0px))
+    rotateX(calc(var(--scene-rx, 0deg) * -.4)) rotateY(calc(var(--scene-ry, 0deg) * -.65)) scale(var(--title-scale, 1));
+}
+.hero-intro {
+  transform: translate3d(calc(var(--mx) * .22 + var(--support-origin-x, 0px)), calc(var(--my) * .18 + var(--support-origin-y, 0px)), var(--support-z, 0px)) scale(var(--support-scale, 1));
+}
+.hero-coordinate {
+  transform: translate3d(calc(var(--mx) * .22 + var(--coordinate-origin-x, 0px)), calc(var(--my) * .18 + var(--coordinate-origin-y, 0px)), var(--support-z, 0px)) scale(var(--support-scale, 1));
+}
+.nav {
+  transform: translate3d(calc(var(--mx) * .065 + var(--nav-origin-x, 0px)), calc(var(--my) * .065 + var(--nav-origin-y, 0px)), var(--nav-z, 0px)) scale(var(--nav-scale, 1));
+}
+.hero-stat {
+  transform: translate3d(calc(var(--mx) * 1.35 + var(--card-one-origin-x, 0px)), calc(var(--my) * 1.1 + var(--card-one-scroll, 0px) + var(--float-one, 0px) + var(--card-one-origin-y, 0px)), calc(var(--card-one-z, 0px) + var(--hover-z, 0px)))
+    rotateX(calc(var(--scene-rx, 0deg) * -1.4 + var(--rx, 0deg))) rotateY(calc(var(--scene-ry, 0deg) * 1.4 + var(--ry, 0deg))) scale(var(--card-one-scale, 1));
+  transition: border-color .6s, background .6s, box-shadow .7s;
+}
+.stat-two {
+  transform: translate3d(calc(var(--mx) * 1.8 + var(--card-two-origin-x, 0px)), calc(var(--my) * 1.5 + var(--card-two-scroll, 0px) + var(--float-two, 0px) + var(--card-two-origin-y, 0px)), calc(var(--card-two-z, 0px) + var(--hover-z, 0px)))
+    rotateX(calc(var(--scene-rx, 0deg) * -1.8 + var(--rx, 0deg))) rotateY(calc(var(--scene-ry, 0deg) * 1.8 + var(--ry, 0deg))) scale(var(--card-two-scale, 1));
+}
+.hero-stat:hover { box-shadow: 0 24px 48px #09110d38; }
+.property-card.selected, .property-card.selected:hover {
+  transform: perspective(1400px) translateZ(var(--hover-z, 0px)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: opacity .5s;
+}
+.property-card.selected .property-image > img {
+  transform: translate3d(var(--card-image-x, 0px), var(--card-image-y, 0px), 0) scale(1);
+  transition: transform .9s cubic-bezier(.2,.65,.3,1);
+}
+.property-card.selected:hover .property-image > img {
+  transform: translate3d(var(--card-image-x, 0px), var(--card-image-y, 0px), 0) scale(1.035);
+}
+.tilt.reveal.is-visible {
+  transform: perspective(1400px) translateZ(var(--hover-z, 0px)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+}
+.expert-photo > img { transform: translate3d(0, var(--image-drift, 0px), 0) scale(var(--image-depth-scale, 1)); }
+.expert-card:hover .expert-photo > img { transform: translate3d(0, var(--image-drift, 0px), 0) scale(1.04); }
+@media (max-width: 600px), (hover: none), (pointer: coarse) {
+  .hero { perspective: none; }
+  .hero-scene, .hero-foreground {
+    transform: translate3d(0, var(--architecture-scroll, 0px), 0) scale(var(--architecture-scale, 1));
+  }
+  .hero-shade::before { content: none; }
+  .hero-title { transform: scale(var(--title-scale, 1)); }
+  .hero-stat { transform: translate3d(0, var(--card-one-scroll, 0px), 0); }
+  .stat-two { transform: translate3d(0, var(--card-two-scroll, 0px), 0); }
+  .hero-intro, .hero-coordinate, .nav, .hero-bottom { transform: none; }
+  .property-card.selected, .property-card.selected:hover, .tilt.reveal.is-visible { transform: none; }
+  .property-card.selected .property-image > img, .property-card.selected:hover .property-image > img { transform: none; }
+  .intro-visual > img, .digital-visual > img, .journal-image > img, .expert-photo > img {
+    transform: translate3d(0, var(--image-drift, 0px), 0) scale(var(--image-depth-scale, 1));
+  }
+  .hero-stat:active { transform: translate3d(0, var(--card-one-scroll, 0px), 0) scale(1.008); transition: transform .4s; }
+  .stat-two:active { transform: translate3d(0, var(--card-two-scroll, 0px), 0) scale(1.008); }
+}
+@media (max-width: 600px) {
+  .hero-foreground { display: block; inset: -12px; width: calc(100% + 24px); height: calc(100% + 24px); }
+  /* Keep enough of the letters above the roof to read the masked portrait title. */
+  .hero-title { top: 30.5%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-scene, .hero-foreground, .hero-title, .hero-intro, .hero-coordinate,
+  .hero-stat, .hero-stat:active, .nav, .hero-bottom, .property-card.selected,
+  .property-card.selected:hover, .tilt.reveal.is-visible,
+  .intro-visual > img, .digital-visual > img, .journal-image > img,
+  .expert-photo > img, .expert-card:hover .expert-photo > img,
+  .property-card.selected .property-image > img { transform: none !important; }
+  .hero-shade::before { content: none; }
+}

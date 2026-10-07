@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.sites-local/
+*.log
+artifacts/
+public/assets/hero-source.png
